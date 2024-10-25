@@ -16,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+@Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -29,19 +30,20 @@ public class WebConfig {
             var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
             corsConfiguration.setAllowedOrigins(List.of("https://www.boostergin.com"));
             corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-            corsConfiguration.setAllowedHeaders(List.of("*"));
+            corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
             corsConfiguration.setAllowCredentials(true);
             return corsConfiguration;
         }));
 
         http.csrf(AbstractHttpConfigurer::disable);
 
+        // "keycloak/getToken" endpoint'ine korumasız erişim sağlıyoruz
         http.authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/keycloak/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/keycloak/getToken").permitAll() // İlk istekte token gereksiz
+                                .anyRequest().authenticated() // Diğer isteklerde kimlik doğrulama gerekli
                 )
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
