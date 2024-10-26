@@ -31,7 +31,7 @@ public class WebConfig {
         // "keycloak/getToken" endpoint'ine korumasız erişim sağlıyoruz
         http.authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/keycloak/getToken").permitAll() // İlk istekte token gereksiz
+                                .requestMatchers("/keycloak/getToken","/users/all").permitAll() // İlk istekte token gereksiz
                                 .anyRequest().authenticated() // Diğer isteklerde kimlik doğrulama gerekli
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
