@@ -13,9 +13,9 @@ server:
 app:
   keycloak:
     admin:
-      clientId: DN
-      clientSecret: mv500tThtNip1DFystTsF3vKrCA6cDW9
+      clientId: PH
+      clientSecret: wCDgOs6Vh7qlrIDRXEfPch1SXdVccJQb
       adminClientId: admin-cli
-      adminClientSecret: vwFAPRfDKTOLJcKMpO8B1l5eQEHh02dG
-    realm: DirectNexus
-    serverUrl: https://keycloak.boostergin.com
+      adminClientSecret: 6LnAoUMLSbQS2OJ8uwxjR6hB0FhFAcWJ
+    realm: PsikoHekim
+    serverUrl: http://localhost:9082
