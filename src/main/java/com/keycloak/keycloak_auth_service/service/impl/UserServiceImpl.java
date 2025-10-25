@@ -167,12 +167,29 @@ public class UserServiceImpl implements UserService {
                         List<RoleRepresentation> userRoles = userResource.roles().realmLevel().listAll();
                         
                         if (!userRoles.isEmpty()) {
-                            // İlk rolü al (genellikle kullanıcının ana rolü)
-                            String roleName = userRoles.get(0).getName();
-                            // ADMIN veya USER kontrolü
-                            if (roleName.toUpperCase().contains("ADMIN")) {
-                                response.setRole("ADMIN");
+                            // Tüm rollerden ADMIN veya offlin_access olmayan ilk rolü al
+                            String roleName = null;
+                            for (RoleRepresentation role : userRoles) {
+                                String name = role.getName();
+                                // offlin_access, uma_authorization gibi sistem rollerini atla
+                                if (!name.equals("offline_access") && !name.equals("uma_authorization")) {
+                                    roleName = name;
+                                    break;
+                                }
+                            }
+                            
+                            if (roleName != null) {
+                                // ADMIN veya USER kontrolü (case-insensitive)
+                                if (roleName.toUpperCase().contains("ADMIN")) {
+                                    response.setRole("ADMIN");
+                                } else if (roleName.toUpperCase().contains("USER")) {
+                                    response.setRole("USER");
+                                } else {
+                                    // Bilinmeyen rol için default USER
+                                    response.setRole("USER");
+                                }
                             } else {
+                                // Sadece sistem rolleri varsa default USER
                                 response.setRole("USER");
                             }
                         } else {
@@ -182,7 +199,7 @@ public class UserServiceImpl implements UserService {
                     } catch (Exception e) {
                         // Hata durumunda default USER
                         response.setRole("USER");
-                        System.err.println("Error getting user role: " + e.getMessage());
+                        System.err.println("Error getting user role for user " + user.getId() + ": " + e.getMessage());
                     }
                     
                     return response;
