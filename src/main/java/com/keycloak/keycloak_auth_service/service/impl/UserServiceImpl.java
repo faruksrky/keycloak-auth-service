@@ -85,40 +85,28 @@ public class UserServiceImpl implements UserService {
             
             try {
                 List<RoleRepresentation> realmRoles = keycloak.realm(realm).roles().list();
-                
-                // Debug: Tüm rolleri yazdır
-                System.out.println("Available roles:");
-                realmRoles.forEach(role -> System.out.println("  - " + role.getName()));
-                
                 RoleRepresentation assignedRole = realmRoles.stream()
                     .filter(role -> role.getName().equalsIgnoreCase(roleName))
                     .findFirst()
                     .orElse(null);
                 
                 if (assignedRole != null) {
-                    System.out.println("Assigning role: " + assignedRole.getName() + " to user: " + userRequest.getUserName());
                     userResource.roles().realmLevel().add(List.of(assignedRole));
-                    System.out.println("Role assigned successfully");
                 } else {
                     // Role yoksa default USER rolünü ara
-                    System.out.println("Role '" + roleName + "' not found, trying USER");
                     assignedRole = realmRoles.stream()
                         .filter(role -> role.getName().equalsIgnoreCase("USER"))
                         .findFirst()
                         .orElse(null);
                     
                     if (assignedRole != null) {
-                        System.out.println("Assigning default role: USER to user: " + userRequest.getUserName());
                         userResource.roles().realmLevel().add(List.of(assignedRole));
-                    } else {
-                        System.err.println("ERROR: USER role not found in realm!");
                     }
                 }
             } catch (Exception e) {
                 // Role ataması başarısız olursa log'la ama hata fırlatma
                 System.err.println("Role assignment failed for user: " + userRequest.getUserName());
                 System.err.println("Error: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
@@ -179,10 +167,6 @@ public class UserServiceImpl implements UserService {
                         UserResource userResource = usersResource.get(user.getId());
                         List<RoleRepresentation> userRoles = userResource.roles().realmLevel().listAll();
                         
-                        // Debug: Tüm rollerini konsola yazdır
-                        System.out.println("User: " + user.getUsername() + " - Roles:");
-                        userRoles.forEach(role -> System.out.println("  - " + role.getName()));
-                        
                         if (!userRoles.isEmpty()) {
                             String roleName = null;
                             boolean isAdmin = false;
@@ -212,30 +196,23 @@ public class UserServiceImpl implements UserService {
                                 }
                             }
                             
-                            System.out.println("Selected role for " + user.getUsername() + ": " + roleName);
-                            
                             if (isAdmin) {
                                 response.setRole("ADMIN");
-                                System.out.println("Assigned role: ADMIN");
                             } else if (roleName != null) {
                                 // USER kontrolü (case-insensitive)
                                 if (roleName.toUpperCase().contains("USER")) {
                                     response.setRole("USER");
-                                    System.out.println("Assigned role: USER");
                                 } else {
                                     // Bilinmeyen rol için default USER
                                     response.setRole("USER");
-                                    System.out.println("Assigned role: USER (unknown role: " + roleName + ")");
                                 }
                             } else {
                                 // Sadece sistem rolleri varsa default USER
                                 response.setRole("USER");
-                                System.out.println("Assigned role: USER (only system roles)");
                             }
                         } else {
                             // Role yoksa default USER
                             response.setRole("USER");
-                            System.out.println("Assigned role: USER (no roles)");
                         }
                     } catch (Exception e) {
                         // Hata durumunda default USER
