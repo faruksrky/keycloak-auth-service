@@ -1,7 +1,9 @@
 package com.keycloak.keycloak_auth_service.controller;
 
 import com.keycloak.keycloak_auth_service.dto.request.UserRequest;
+import com.keycloak.keycloak_auth_service.dto.response.UserNameResponse;
 import com.keycloak.keycloak_auth_service.dto.response.UserResponse;
+import jakarta.ws.rs.WebApplicationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.keycloak.keycloak_auth_service.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -48,20 +51,35 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }
-
         @GetMapping("/userInfo")
     public ResponseEntity<?> getUserInfoByToken(@RequestBody String accessToken) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfoByToken(accessToken));
     }
 
     @GetMapping("/usernames")
-    public ResponseEntity<List<String>> getAllUsernames() {
-        List<String> usernames = userService.getAllUsernames();
+    public ResponseEntity<List<UserNameResponse>> getAllUsernames() {
+        List<UserNameResponse> usernames = userService.getAllUsernames();
         return ResponseEntity.ok(usernames);
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> listUsers() {
+        try {
+            var users = userService.getAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (WebApplicationException ex) {
+            // JAX-RS hatası: Keycloak’tan gelen HTTP status’u geçir
+            int status = ex.getResponse() != null ? ex.getResponse().getStatus() : 500;
+            return ResponseEntity.status(status).body(Map.of(
+                    "error", "Keycloak error",
+                    "status", status
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                    "error", "Internal error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
 }

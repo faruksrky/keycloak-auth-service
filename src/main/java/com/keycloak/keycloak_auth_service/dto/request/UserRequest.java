@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
 public class UserRequest {
 
     @NotBlank(message = "Kullanıcı adı zorunludur")
@@ -19,4 +19,7 @@ public class UserRequest {
     private String lastName;
     @NotBlank(message = "Email zorunludur")
     private String email;
+    
+    // Optional: role alanı
+    private String role;
 }

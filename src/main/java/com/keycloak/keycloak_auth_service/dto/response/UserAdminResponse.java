@@ -5,13 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserResponse {
+public class UserAdminResponse {
     private String id;
+    private String username;
     private String firstName;
     private String lastName;
     private String email;
-    private String userName;
-    private Boolean enabled;
-    private Boolean emailVerified;
-    private String role;
 }

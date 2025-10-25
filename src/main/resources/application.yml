@@ -14,8 +14,8 @@ app:
   keycloak:
     admin:
       clientId: PH
-      clientSecret: wCDgOs6Vh7qlrIDRXEfPch1SXdVccJQb
+      clientSecret: rTuXY9QyjACS2heH2OGgy19tKEZrzlJw
       adminClientId: admin-cli
-      adminClientSecret: 6LnAoUMLSbQS2OJ8uwxjR6hB0FhFAcWJ
+      adminClientSecret: 5NZHfNmz78pV6WcKuJUjDDlzsJILEBef
     realm: PsikoHekim
-    serverUrl: http://localhost:9082
+    serverUrl: http://localhost:8080

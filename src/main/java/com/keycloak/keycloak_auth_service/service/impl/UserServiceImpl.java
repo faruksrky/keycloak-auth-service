@@ -1,6 +1,8 @@
 package com.keycloak.keycloak_auth_service.service.impl;
 
 import com.keycloak.keycloak_auth_service.dto.request.UserRequest;
+import com.keycloak.keycloak_auth_service.dto.response.UserAdminResponse;
+import com.keycloak.keycloak_auth_service.dto.response.UserNameResponse;
 import com.keycloak.keycloak_auth_service.dto.response.UserResponse;
 import com.keycloak.keycloak_auth_service.service.UserService;
 import jakarta.ws.rs.core.Response;
@@ -70,8 +72,42 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        // Kullanıcıyı bul ve rol ataması yap
         List<UserRepresentation> userRepresentations = usersResource.searchByUsername(userRequest.getUserName(), true);
-        UserRepresentation userRepresentation1 = userRepresentations.get(0);
+        if (!userRepresentations.isEmpty()) {
+            UserRepresentation createdUser = userRepresentations.get(0);
+            UserResource userResource = usersResource.get(createdUser.getId());
+            
+            // Role ataması yap
+            String roleName = userRequest.getRole() != null && !userRequest.getRole().isEmpty() 
+                ? userRequest.getRole() 
+                : "USER"; // Default olarak USER rolü
+            
+            try {
+                List<RoleRepresentation> realmRoles = keycloak.realm(realm).roles().list();
+                RoleRepresentation assignedRole = realmRoles.stream()
+                    .filter(role -> role.getName().equalsIgnoreCase(roleName))
+                    .findFirst()
+                    .orElse(null);
+                
+                if (assignedRole != null) {
+                    userResource.roles().realmLevel().add(List.of(assignedRole));
+                } else {
+                    // Role yoksa default USER rolünü ara
+                    assignedRole = realmRoles.stream()
+                        .filter(role -> role.getName().equalsIgnoreCase("USER"))
+                        .findFirst()
+                        .orElse(null);
+                    
+                    if (assignedRole != null) {
+                        userResource.roles().realmLevel().add(List.of(assignedRole));
+                    }
+                }
+            } catch (Exception e) {
+                // Role ataması başarısız olursa log'la ama hata fırlatma
+                System.err.println("Role assignment failed: " + e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -89,54 +125,71 @@ public class UserServiceImpl implements UserService {
         userResource.executeActionsEmail(List.of("UPDATE_PASSWORD"));
     }
 
-    @Override
-    public List<String> getAllUsernames() {
-        try {
-            UsersResource usersResource = getUsersResource();
-            List<UserRepresentation> userRepresentations = usersResource.list();
-
-            if (userRepresentations == null || userRepresentations.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found");
-            }
-
-            return userRepresentations.stream()
-                    .map(UserRepresentation::getUsername)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while fetching usernames", e);
-        }
-    }
 
     private UsersResource getUsersResource() {
         return keycloak.realm(realm).users();
     }
 
+    @Override
+    public List<UserNameResponse> getAllUsernames() {
+        UsersResource usersResource = getUsersResource();
+        List<UserRepresentation> userRepresentations = usersResource.list();
+
+        return userRepresentations.stream()
+                .map(user -> {
+                    UserNameResponse response = new UserNameResponse();
+                    response.setId(user.getId());
+                    response.setUsername(user.getUsername());
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<UserResponse> getAllUsers() {
-        try {
-            UsersResource usersResource = getUsersResource();
-            List<UserRepresentation> userRepresentations = usersResource.list();
+        UsersResource usersResource = getUsersResource();
+        List<UserRepresentation> userRepresentations = usersResource.list();
 
-            if (userRepresentations == null || userRepresentations.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı");
-            }
-
-            return userRepresentations.stream()
-                    .map(user -> {
-                        UserResponse userResponse = new UserResponse();
-                        userResponse.setId(user.getId());
-                        userResponse.setUserName(user.getUsername());
-                        userResponse.setFirstName(user.getFirstName());
-                        userResponse.setLastName(user.getLastName());
-                        userResponse.setEmail(user.getEmail());
-                        return userResponse;
-                    })
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Kullanıcı listesi çekilirken bir hata oluştu", e);
-        }
+        return userRepresentations.stream()
+                .map(user -> {
+                    UserResponse response = new UserResponse();
+                    response.setId(user.getId());
+                    response.setFirstName(user.getFirstName());
+                    response.setLastName(user.getLastName());
+                    response.setEmail(user.getEmail());
+                    response.setUserName(user.getUsername());
+                    response.setEnabled(user.isEnabled());
+                    response.setEmailVerified(user.isEmailVerified());
+                    
+                    // Kullanıcının rolünü al
+                    try {
+                        UserResource userResource = usersResource.get(user.getId());
+                        List<RoleRepresentation> userRoles = userResource.roles().realmLevel().listAll();
+                        
+                        if (!userRoles.isEmpty()) {
+                            // İlk rolü al (genellikle kullanıcının ana rolü)
+                            String roleName = userRoles.get(0).getName();
+                            // ADMIN veya USER kontrolü
+                            if (roleName.toUpperCase().contains("ADMIN")) {
+                                response.setRole("ADMIN");
+                            } else {
+                                response.setRole("USER");
+                            }
+                        } else {
+                            // Role yoksa default USER
+                            response.setRole("USER");
+                        }
+                    } catch (Exception e) {
+                        // Hata durumunda default USER
+                        response.setRole("USER");
+                        System.err.println("Error getting user role: " + e.getMessage());
+                    }
+                    
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
+
     @Override
     public UserRepresentation getUserInfoByToken(String accessToken) {
         try {
