@@ -19,10 +19,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest) {

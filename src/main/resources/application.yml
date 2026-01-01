@@ -8,7 +8,17 @@ spring:
           issuer-uri: ${app.keycloak.serverUrl}/realms/${app.keycloak.realm}
           jwk-set-uri: ${app.keycloak.serverUrl}/realms/${app.keycloak.realm}/protocol/openid-connect/certs
 server:
-  port: 6700
+  port: ${PORT:6700}  # Railway PORT env var'ını kullan, yoksa 6700
+
+logging:
+  level:
+    root: INFO
+    com.keycloak.keycloak_auth_service.config.CustomCorsFilter: DEBUG  # CORS filter logları
+  file:
+    name: keycloak.log  # Log dosyası
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 app:
   keycloak:

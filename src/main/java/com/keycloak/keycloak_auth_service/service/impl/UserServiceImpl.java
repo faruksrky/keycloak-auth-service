@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     @Value("${app.keycloak.realm}")
     private String realm;
@@ -37,6 +36,10 @@ public class UserServiceImpl implements UserService {
     private String adminClientSecret;
 
     private final Keycloak keycloak;
+
+    public UserServiceImpl(Keycloak keycloak) {
+        this.keycloak = keycloak;
+    }
 
     @Override
     public void createUser(UserRequest userRequest) {

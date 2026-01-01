@@ -12,10 +12,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/keycloak")
-@RequiredArgsConstructor
 public class LoginController {
 
     private final KeycloakService keycloakService;
+
+    public LoginController(KeycloakService keycloakService) {
+        this.keycloakService = keycloakService;
+    }
 
     @GetMapping("/userInfo")
     public ResponseEntity<?> getTokenInfo(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
