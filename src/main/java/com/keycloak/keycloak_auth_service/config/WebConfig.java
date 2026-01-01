@@ -94,7 +94,6 @@ public class WebConfig implements WebMvcConfigurer {
             "https://psikohekimfrontend.pages.dev",    // Production domain
             "https://*.iyihislerapp.com",              // Keycloak domain pattern
             "https://iyihislerapp.com",                // Keycloak domain
-            "https://*.up.railway.app",                // Railway deployments
             "http://localhost:*"                       // Local development
         );
         

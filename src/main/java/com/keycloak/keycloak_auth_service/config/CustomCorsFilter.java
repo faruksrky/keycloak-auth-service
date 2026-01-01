@@ -25,9 +25,8 @@ public class CustomCorsFilter extends OncePerRequestFilter {
     private static final List<String> ALLOWED_ORIGIN_PATTERNS = Arrays.asList(
         "https://.*\\.psikohekimfrontend\\.pages\\.dev",  // Regex: any subdomain (preview deployments)
         "https://psikohekimfrontend\\.pages\\.dev",        // Production
-        "https://.*\\.iyihislerapp\\.com",                 // Keycloak domains (tunnel)
+        "https://.*\\.iyihislerapp\\.com",                 // Keycloak domains (Cloudflare Tunnel)
         "https://iyihislerapp\\.com",                      // Keycloak production
-        "https://.*\\.up\\.railway\\.app",                 // Railway deployments
         "http://localhost:.*"                              // Local development
     );
 
