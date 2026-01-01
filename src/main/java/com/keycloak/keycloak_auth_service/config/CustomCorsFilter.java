@@ -61,13 +61,24 @@ public class CustomCorsFilter extends OncePerRequestFilter {
         // Handle preflight OPTIONS request FIRST
         if ("OPTIONS".equalsIgnoreCase(method)) {
             if (isAllowed && origin != null) {
+                // Get requested headers from Access-Control-Request-Headers
+                String requestedHeaders = request.getHeader("Access-Control-Request-Headers");
+                log.info("📋 Preflight Request Headers: {}", requestedHeaders);
+                
                 // Set CORS headers for preflight
                 response.setHeader("Access-Control-Allow-Origin", origin);
                 response.setHeader("Access-Control-Allow-Credentials", "true");
                 response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-                response.setHeader("Access-Control-Allow-Headers", "*");
+                
+                // Explicitly allow common headers (wildcard doesn't work with credentials)
+                String allowedHeaders = "Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers";
+                if (requestedHeaders != null && !requestedHeaders.isEmpty()) {
+                    // Include requested headers plus our defaults
+                    allowedHeaders = allowedHeaders + ", " + requestedHeaders;
+                }
+                response.setHeader("Access-Control-Allow-Headers", allowedHeaders);
                 response.setHeader("Access-Control-Max-Age", "3600");
-                log.info("✅ OPTIONS preflight ALLOWED, returning 200 OK");
+                log.info("✅ OPTIONS preflight ALLOWED, returning 200 OK | Allowed Headers: {}", allowedHeaders);
                 response.setStatus(HttpServletResponse.SC_OK);
                 return; // Don't continue to filter chain
             } else {
@@ -82,7 +93,7 @@ public class CustomCorsFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Origin", origin);
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-            response.setHeader("Access-Control-Allow-Headers", "*");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
             response.setHeader("Access-Control-Expose-Headers", "Authorization, Content-Type");
             response.setHeader("Access-Control-Max-Age", "3600");
             log.info("✅ CORS headers SET for origin: {}", origin);
