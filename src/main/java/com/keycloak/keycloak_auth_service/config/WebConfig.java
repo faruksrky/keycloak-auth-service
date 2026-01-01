@@ -126,7 +126,6 @@ public class WebConfig implements WebMvcConfigurer {
                     "https://psikohekimfrontend.pages.dev",
                     "https://*.iyihislerapp.com",
                     "https://iyihislerapp.com",
-                    "https://*.up.railway.app",
                     "http://localhost:*"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
