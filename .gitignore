@@ -14,3 +14,5 @@ mvnw.cmd
 bin/
 logs/
 keycloak.log*
+.env
+docker-compose/pgdata/

@@ -27,5 +27,5 @@ app:
       clientSecret: rTuXY9QyjACS2heH2OGgy19tKEZrzlJw
       adminClientId: admin-cli
       adminClientSecret: 5NZHfNmz78pV6WcKuJUjDDlzsJILEBef
-    realm: PsikoHekim
+    realm: psikohekim
     serverUrl: http://localhost:8080
