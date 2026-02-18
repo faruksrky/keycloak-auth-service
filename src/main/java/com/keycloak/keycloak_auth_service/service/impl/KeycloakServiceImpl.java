@@ -54,7 +54,9 @@ public class KeycloakServiceImpl implements KeycloakService {
         map.add("client_id", clientId);
         map.add("username", username);
         map.add("password", password);
-        map.add("client_secret", clientSecret);
+        if (clientSecret != null && !clientSecret.isBlank()) {
+            map.add("client_secret", clientSecret);
+        }
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 

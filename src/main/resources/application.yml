@@ -23,8 +23,9 @@ logging:
 app:
   keycloak:
     admin:
-      clientId: PH
-      clientSecret: rTuXY9QyjACS2heH2OGgy19tKEZrzlJw
+      # psikohekim-frontend: realm'deki public client (directAccessGrantsEnabled)
+      clientId: psikohekim-frontend
+      clientSecret:   # public client - secret yok
       adminClientId: admin-cli
       adminClientSecret: 5NZHfNmz78pV6WcKuJUjDDlzsJILEBef
     realm: psikohekim
