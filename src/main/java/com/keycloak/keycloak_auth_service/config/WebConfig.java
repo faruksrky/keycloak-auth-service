@@ -60,11 +60,13 @@ public class WebConfig implements WebMvcConfigurer {
                         .requestMatchers(HttpMethod.POST, "/keycloak/getTokenAdmin").permitAll()
                         // userInfo endpoint'i token gerektirir ama CORS preflight için açık olmalı
                         .requestMatchers(HttpMethod.OPTIONS, "/keycloak/userInfo").permitAll()
+                        // Yeni kullanıcı kaydı (sign-up) - token gerekmez
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/error").permitAll()
 
-                        // 🔒 Kullanıcı listesi: giriş + yetki gerekli
+                        // 🔒 Kullanıcı listesi: giriş + yetki gerekli (realm role: admin -> ROLE_admin)
                         .requestMatchers(HttpMethod.GET, "/users/list")
-                        .hasAnyAuthority("SCOPE_user.read", "ROLE_ADMIN")
+                        .hasAnyAuthority("SCOPE_user.read", "ROLE_ADMIN", "ROLE_admin", "ROLE_Admin")
 
                         // diğer tüm istekler: kimlik doğrulaması zorunlu
                         .anyRequest().authenticated()
