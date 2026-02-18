@@ -1,6 +1,7 @@
-# Proje 1: Keycloak
-# Gereksinim: PostgreSQL
-# Kullanım: cd Keycloak && docker compose -f docker-compose/docker-compose.yml up -d
+# Keycloak Projesi: Keycloak imajı + keycloak-auth-service (Spring Boot)
+# auth.iyihislerapp.com → Nginx → keycloak-auth-service:6700
+# keycloak-auth-service → Keycloak:8080 (internal)
+# Kullanım: cd Keycloak && docker compose -f docker-compose/docker-compose.yml --env-file .env up -d --build
 
 services:
   postgres:
@@ -44,6 +45,23 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
+
+  keycloak-auth-service:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: keycloak-auth-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 6700
+      # Keycloak: docker network'ta keycloak:8080, tek başına deploy ise 127.0.0.1:8080
+      APP_KEYCLOAK_SERVER_URL: ${APP_KEYCLOAK_SERVER_URL:-http://keycloak:8080}
+    ports:
+      - "6700:6700"
+    depends_on:
+      keycloak:
+        condition: service_started
     restart: unless-stopped
 
 volumes:

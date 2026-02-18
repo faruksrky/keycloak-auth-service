@@ -1,0 +1,11 @@
+# Production - Keycloak Auth Service
+# app.keycloak.serverUrl: Docker içinde keycloak:8080, JWT issuer için public URL
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+app:
+  keycloak:
+    serverUrl: ${APP_KEYCLOAK_SERVER_URL:http://keycloak:8080}

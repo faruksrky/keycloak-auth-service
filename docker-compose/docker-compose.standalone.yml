@@ -1,0 +1,17 @@
+# Sadece keycloak-auth-service - Keycloak zaten sunucuda çalışıyorsa
+# Mevcut Keycloak: 127.0.0.1:8080
+# Kullanım: docker compose -f docker-compose/docker-compose.standalone.yml up -d --build
+
+services:
+  keycloak-auth-service:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: keycloak-auth-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 6700
+      APP_KEYCLOAK_SERVER_URL: http://127.0.0.1:8080
+    restart: unless-stopped
+    # Host network: mevcut Keycloak'a 127.0.0.1:8080 ile erişir, uygulama 6700'de dinler
+    network_mode: host
