@@ -22,12 +22,10 @@ public class CustomCorsFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(CustomCorsFilter.class);
 
-    // Cloudflare Pages: 80d65227.psikohekimfrontend.pages.dev, psikohekimfrontend.pages.dev
-    // iyihislerapp.com: ana domain + www + subdomains
+    // Cloudflare Pages: psikohekimfrontend.pages.dev (production) + 5b025cfd.psikohekimfrontend.pages.dev (preview)
+    // ([a-zA-Z0-9-]+\\.)? = optional subdomain (hash) - matches both with and without
     private static final List<String> ALLOWED_ORIGIN_PATTERNS = Arrays.asList(
-        "https://[a-zA-Z0-9-]+\\.psikohekimfrontend\\.pages\\.dev",  // Preview: 80d65227.psikohekimfrontend.pages.dev
-        "https://psikohekimfrontend\\.pages\\.dev",                   // Production
-        "https://.*\\.psikohekimfrontend\\.pages\\.dev",              // Fallback
+        "https://([a-zA-Z0-9-]+\\.)?psikohekimfrontend\\.pages\\.dev",  // Production + Preview
         "https://www\\.iyihislerapp\\.com",
         "https://iyihislerapp\\.com",
         "https://.*\\.iyihislerapp\\.com",
