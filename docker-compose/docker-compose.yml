@@ -59,6 +59,8 @@ services:
       APP_KEYCLOAK_SERVER_URL: ${APP_KEYCLOAK_SERVER_URL:-http://keycloak:8080}
       # JWT issuer: token'daki issuer ile eşleşmeli (KEYCLOAK_HOSTNAME kullanır)
       APP_JWT_ISSUER_URI: ${APP_JWT_ISSUER_URI:-https://auth.iyihislerapp.com/realms/psikohekim}
+      # admin-cli client secret (master realm → admin-cli → Client authentication ON → Credentials)
+      APP_KEYCLOAK_ADMIN_ADMINCLIENTSECRET: ${APP_KEYCLOAK_ADMIN_ADMINCLIENTSECRET:-48nB8sqCaphu6DoHi2zWwqopwZ281Ql1}
     ports:
       - "6700:6700"
     depends_on:

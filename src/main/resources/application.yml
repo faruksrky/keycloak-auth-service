@@ -27,6 +27,6 @@ app:
       clientId: psikohekim-frontend
       clientSecret:   # public client - secret yok
       adminClientId: admin-cli
-      adminClientSecret: 5NZHfNmz78pV6WcKuJUjDDlzsJILEBef
+      adminClientSecret: 48nB8sqCaphu6DoHi2zWwqopwZ281Ql1
     realm: psikohekim
     serverUrl: http://localhost:8080
