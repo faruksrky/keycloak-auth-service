@@ -20,9 +20,10 @@ public class KeycloakConfig {
 
     @Bean
     public Keycloak keycloakAdmin() {
+        // admin-cli client master realm'de - authentication için master kullan
         return KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
-                .realm(realm)
+                .realm("master")
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
