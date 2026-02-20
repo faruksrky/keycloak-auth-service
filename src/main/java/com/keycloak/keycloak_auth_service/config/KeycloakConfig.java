@@ -32,6 +32,7 @@ public class KeycloakConfig {
             return builder
                     .username(adminUsername)
                     .password(adminPassword)
+                    .clientSecret(clientSecret != null ? clientSecret : "")
                     .grantType(OAuth2Constants.PASSWORD)
                     .build();
         }
