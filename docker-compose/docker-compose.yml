@@ -55,7 +55,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 6700
-      # Keycloak: docker network'ta keycloak:8080, tek başına deploy ise 127.0.0.1:8080
+      # Keycloak: sunucuda 1-keycloak network'ündeki keycloak'a erişim için
       APP_KEYCLOAK_SERVER_URL: ${APP_KEYCLOAK_SERVER_URL:-http://keycloak:8080}
       # JWT issuer: token'daki issuer ile eşleşmeli (KEYCLOAK_HOSTNAME kullanır)
       APP_JWT_ISSUER_URI: ${APP_JWT_ISSUER_URI:-https://auth.iyihislerapp.com/realms/psikohekim}
@@ -67,6 +67,14 @@ services:
       keycloak:
         condition: service_started
     restart: unless-stopped
+    # Sunucuda keycloak 1-keycloak_default network'ünde - bu network'e bağlan (rebuild sonrası da kalıcı)
+    networks:
+      - keycloak_external
+
+networks:
+  keycloak_external:
+    external: true
+    name: 1-keycloak_default
 
 volumes:
   keycloak_pgdata:
