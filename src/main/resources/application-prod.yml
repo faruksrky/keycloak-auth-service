@@ -1,10 +1,18 @@
 # Production - Keycloak Auth Service
-# app.keycloak.serverUrl: Docker içinde keycloak:8080, JWT issuer için public URL
+# app.keycloak.serverUrl: Docker içinde keycloak:8080 (API çağrıları için)
+# JWT issuer: Keycloak KC_HOSTNAME ile token üretir (https://auth.iyihislerapp.com)
+# Bu yüzden JWT doğrulaması için public URL kullanılmalı
 
 spring:
   config:
     activate:
       on-profile: prod
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # JWT issuer: Keycloak token'da KC_HOSTNAME kullanır - public URL ile eşleşmeli
+          issuer-uri: ${APP_JWT_ISSUER_URI:https://auth.iyihislerapp.com/realms/psikohekim}
 
 app:
   keycloak:
