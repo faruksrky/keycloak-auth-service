@@ -23,10 +23,12 @@ logging:
 app:
   keycloak:
     admin:
-      # psikohekim-frontend: realm'deki public client (directAccessGrantsEnabled)
       clientId: psikohekim-frontend
-      clientSecret:   # public client - secret yok
+      clientSecret:
       adminClientId: admin-cli
       adminClientSecret: 48nB8sqCaphu6DoHi2zWwqopwZ281Ql1
+      # Admin Console girişi - username/password ile Keycloak Admin API (önerilen)
+      username: ${KEYCLOAK_ADMIN:}
+      password: ${KEYCLOAK_ADMIN_PASSWORD:}
     realm: psikohekim
     serverUrl: http://localhost:8080

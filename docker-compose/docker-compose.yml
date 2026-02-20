@@ -61,6 +61,9 @@ services:
       APP_JWT_ISSUER_URI: ${APP_JWT_ISSUER_URI:-https://auth.iyihislerapp.com/realms/psikohekim}
       # admin-cli client secret (master realm → admin-cli → Client authentication ON → Credentials)
       APP_KEYCLOAK_ADMIN_ADMINCLIENTSECRET: ${APP_KEYCLOAK_ADMIN_ADMINCLIENTSECRET:-48nB8sqCaphu6DoHi2zWwqopwZ281Ql1}
+      # Keycloak Admin API için (admin-cli yerine username/password - daha güvenilir)
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-}
     ports:
       - "6700:6700"
     depends_on:

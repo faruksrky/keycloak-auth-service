@@ -11,20 +11,32 @@ import org.springframework.context.annotation.Configuration;
 public class KeycloakConfig {
     @Value("${app.keycloak.serverUrl}")
     private String serverUrl;
-    @Value("${app.keycloak.realm}")
-    private String realm;
     @Value("${app.keycloak.admin.adminClientId}")
     private String clientId;
-    @Value("${app.keycloak.admin.adminClientSecret}")
+    @Value("${app.keycloak.admin.adminClientSecret:}")
     private String clientSecret;
+    @Value("${app.keycloak.admin.username:}")
+    private String adminUsername;
+    @Value("${app.keycloak.admin.password:}")
+    private String adminPassword;
 
     @Bean
     public Keycloak keycloakAdmin() {
-        // admin-cli client master realm'de - authentication için master kullan
-        return KeycloakBuilder.builder()
+        KeycloakBuilder builder = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm("master")
-                .clientId(clientId)
+                .clientId(clientId);
+
+        // Admin username/password varsa kullan (daha güvenilir - Admin Console ile aynı)
+        if (adminUsername != null && !adminUsername.isBlank() && adminPassword != null && !adminPassword.isBlank()) {
+            return builder
+                    .username(adminUsername)
+                    .password(adminPassword)
+                    .grantType(OAuth2Constants.PASSWORD)
+                    .build();
+        }
+        // Yoksa client credentials
+        return builder
                 .clientSecret(clientSecret)
                 .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
                 .build();
